@@ -16,3 +16,5 @@ Say we have a computer with no operating system in it. And we want to install Ch
 These steps are very similar to what we do inside the Dockerfile. When we create an image, we have an empty image, like the computer with no operating system. When we specify the base image of Alpine, that was like installing an operating system. 
 
 But why did we use Alpine? It's like why do we use Ubuntu, Windows, or MacOS. The answer is because they have some built in applications. Suchlike we made use Alpine base image because it has a set of program inside of it that useful for installing and running Redis.
+
+![Alt Text](/redis-image/3.png)
