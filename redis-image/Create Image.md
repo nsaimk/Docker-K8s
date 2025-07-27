@@ -4,7 +4,7 @@ The instruction FROM is used to specfy the Docker image that we want to use as a
 
 The RUN instruction is used to execute some command while we are preparing our custom image.
 
-The CMD instruction specifies what should be executed when our image is used to start up a brand new container.␣␣
+The CMD instruction specifies what should be executed when our image is used to start up a brand new container.
 
 
 ## What's a Base Image? An Analogy..
@@ -17,7 +17,7 @@ These steps are very similar to what we do inside the Dockerfile. When we create
 
 But why did we use Alpine? It's like why do we use Ubuntu, Windows, or MacOS. The answer is because they have some built in applications. Suchlike we made use Alpine base image because it has a set of program inside of it that useful for installing and running Redis.
 
-![Alt Text](/redis-image/3.png)␣␣
+![Alt Text](/redis-image/3.png)
 
 
 ## The Build Process in Detail
@@ -28,9 +28,9 @@ Briefly, every single step in Dockerfile works like creating a new image for the
 
 Every steps look for an image comes from the previous step. So it is kind of like nested images are trying to arrive the last instruction.
 
-![Alt Text](/redis-image/5.png)␣␣
+![Alt Text](/redis-image/5.png)
 
-## Rebuilds with Dock
+## Rebuilds with Cache
  
 Docker cache is a mechanism that reuses previously built layers (intermediate images) to speed up subsequent builds. When you rebuild a Docker image, Docker checks if the instructions in your Dockerfile have changed. If not, it reuses cached layers instead of rebuilding them from scratch. Inside the Docker VM (managed by Docker Desktop).
 
