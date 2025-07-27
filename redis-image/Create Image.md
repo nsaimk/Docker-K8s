@@ -1,8 +1,8 @@
 **Table of Contents**
-1. [Dockerfile](#1.-dockerfile)
-2. [What's a Base Image? An Analogy..](#2.-whats-a-base-image-an-analogy)
-3. [The Build Process in Detail](#3.-the-build-process-in-detail)
-4. [Rebuilds with Cache](#4.-rebuilds-with-cache)
+1. [Dockerfile](#1-dockerfile)  
+2. [What's a Base Image? An Analogy](#2-whats-a-base-image-an-analogy)  
+3. [The Build Process in Detail](#3-the-build-process-in-detail)  
+4. [Rebuilds with Cache](#4-rebuilds-with-cache) 
 
 ## 1. Dockerfile
 ![Alt Text](/redis-image/1.png)
@@ -46,4 +46,3 @@ Docker cache is a mechanism that reuses previously built layers (intermediate im
 When first time we ran 'docker build .' command for our Dockerfile, Docker fetches the alpine base image from Docker Hub, then Docker checked Cache first for redis that then is downloaded from Alpine's package manager (apk) because it didn't exist in Cache(see the picture's first part).
 
 When I ran the 'docker build .' command for the second time, Docker checked Cache first for redis, and found it. In this way Cache reduced the building time(see the yellow boxes).
-␣␣
