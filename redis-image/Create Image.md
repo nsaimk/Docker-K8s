@@ -4,6 +4,7 @@
 3. [The Build Process in Detail](#3-the-build-process-in-detail)  
 4. [Rebuilds with Cache](#4-rebuilds-with-cache) 
 5. [Executing Commands in Running Container](#5-executing-commands-in-running-container) 
+5. [Tagging an Image](#6-tagging-an-image) 
 
 
 ## 1. Dockerfile
@@ -61,3 +62,14 @@ By using the 'exec' command, we are able to start up a second running program in
 
 When the container still running, we can run another program as well; 
 example command: `docker exec -it <PID> redis-cli`
+
+
+## 6. Tagging an Image
+
+![Alt Text](/redis-image/8.png)
+
+Command for tagging: `docker build -t myRedis:lastone .`
+
+In the example command, 'myRedis' is name column of Docker Hub Images, and 'lastone' is tag column.
+
+Tags are just human-readable references. Containers run the same way regardless of the tag.
