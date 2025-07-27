@@ -1,8 +1,8 @@
 **Table of Contents**
-1. [Dockerfile](#dockerfile)
-2. [What's a Base Image? An Analogy..](#whats-a-base-image-an-analogy)
-3. [The Build Process in Detail](#the-build-process-in-detail)
-4. [Rebuilds with Cache](#rebuilds-with-cache)
+1. [Dockerfile](#1.-dockerfile)
+2. [What's a Base Image? An Analogy..](#2.-whats-a-base-image-an-analogy)
+3. [The Build Process in Detail](#3.-the-build-process-in-detail)
+4. [Rebuilds with Cache](#4.-rebuilds-with-cache)
 
 ## 1. Dockerfile
 ![Alt Text](/redis-image/1.png)
