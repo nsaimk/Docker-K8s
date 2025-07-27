@@ -1,3 +1,10 @@
+**Table of Contents**
+1. [Dockerfile](#1.-Dockerfile)
+2. [What's a Base Image? An Analogy..](#2.-Whats-a-Base-Image?-An-Analogy..)
+3. [3. The Build Process in Detail](#3.-The-Build-Process-in-Detail)
+4. [4. Rebuilds with Cache](#4.-Rebuilds-with-Cache)
+
+## 1. Dockerfile
 ![Alt Text](/redis-image/1.png)
 
 The instruction FROM is used to specfy the Docker image that we want to use as a base. So by saying alpine, we want to use base image of alpine when preparing our image.
@@ -7,7 +14,7 @@ The RUN instruction is used to execute some command while we are preparing our c
 The CMD instruction specifies what should be executed when our image is used to start up a brand new container.
 
 
-## What's a Base Image? An Analogy..
+## 2. What's a Base Image? An Analogy..
 
 Say we have a computer with no operating system in it. And we want to install Chrome on computer. These would be the steps:
 
@@ -20,7 +27,7 @@ But why did we use Alpine? It's like why do we use Ubuntu, Windows, or MacOS. Th
 ![Alt Text](/redis-image/3.png)
 
 
-## The Build Process in Detail
+## 3. The Build Process in Detail
 
 ![Alt Text](/redis-image/4.png)
 
@@ -30,7 +37,7 @@ Every steps look for an image comes from the previous step. So it is kind of lik
 
 ![Alt Text](/redis-image/5.png)
 
-## Rebuilds with Cache
+## 4. Rebuilds with Cache
  
 Docker cache is a mechanism that reuses previously built layers (intermediate images) to speed up subsequent builds. When you rebuild a Docker image, Docker checks if the instructions in your Dockerfile have changed. If not, it reuses cached layers instead of rebuilding them from scratch. Inside the Docker VM (managed by Docker Desktop).
 
