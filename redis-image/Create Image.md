@@ -22,6 +22,8 @@ But why did we use Alpine? It's like why do we use Ubuntu, Windows, or MacOS. Th
 
 ## The Build Process in Detail
 
+![Alt Text](/redis-image/4.png)
+
 Briefly, every single step in Dockerfile works like creating a new image for the next instruction, and the next instruction use that image's fiel system snapshot to create a new  temporary container(this temporary containers status and IDs appear on terminal). Finally the last instruction takes that modified image as file system snaphot.
 
 Every steps look for an image comes from the previous step. So it is kind of like nested images are trying to arrive the last instruction.
