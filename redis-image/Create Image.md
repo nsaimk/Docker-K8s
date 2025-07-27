@@ -3,6 +3,8 @@
 2. [What's a Base Image? An Analogy](#2-whats-a-base-image-an-analogy)  
 3. [The Build Process in Detail](#3-the-build-process-in-detail)  
 4. [Rebuilds with Cache](#4-rebuilds-with-cache) 
+5. [Executing Commands in Running Container](#5-executing-commands-in-running-container) 
+
 
 ## 1. Dockerfile
 ![Alt Text](/redis-image/1.png)
@@ -12,6 +14,8 @@ The instruction FROM is used to specfy the Docker image that we want to use as a
 The RUN instruction is used to execute some command while we are preparing our custom image.
 
 The CMD instruction specifies what should be executed when our image is used to start up a brand new container.
+
+By running the command 'docker build .' in wherever the Dockerfile is located, we create an iamge of it. Then we can create a container of that image by running the command 'docker run <PID>'
 
 
 ## 2. What's a Base Image? An Analogy..
@@ -37,6 +41,7 @@ Every steps look for an image comes from the previous step. So it is kind of lik
 
 ![Alt Text](/redis-image/5.png)
 
+
 ## 4. Rebuilds with Cache
  
 Docker cache is a mechanism that reuses previously built layers (intermediate images) to speed up subsequent builds. When you rebuild a Docker image, Docker checks if the instructions in your Dockerfile have changed. If not, it reuses cached layers instead of rebuilding them from scratch. Inside the Docker VM (managed by Docker Desktop).
@@ -46,3 +51,13 @@ Docker cache is a mechanism that reuses previously built layers (intermediate im
 When first time we ran 'docker build .' command for our Dockerfile, Docker fetches the alpine base image from Docker Hub, then Docker checked Cache first for redis that then is downloaded from Alpine's package manager (apk) because it didn't exist in Cache(see the picture's first part).
 
 When I ran the 'docker build .' command for the second time, Docker checked Cache first for redis, and found it. In this way Cache reduced the building time(see the yellow boxes).
+
+
+## 5. Executing Commands in Running Container
+
+![Alt Text](/redis-image/7.png)
+
+By using the 'exec' command, we are able to start up a second running program inside of our container.
+
+When the container still running, we can run another program as well; 
+example command: `docker exec -it <PID> redis-cli`
