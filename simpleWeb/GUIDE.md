@@ -51,3 +51,21 @@ RUN npm cache clean --force && npm install
 
 CMD ["npm", "start"]
 ```
+
+
+
+## Conatiner Port Mapping
+
+Even we successfully got our image built, and we are running a container out of it, we still are not be able to actually visit the port.
+
+![Alt Text](/simpleWeb/assets/localhost.png)
+
+- Our browser is making a request to local host 8080 which is a reference to our current machine on port 8080. By default, no traffic that is coming into our computer or into our local host network is routed into the container. The container essentially has its own isolated set of ports that can receive traffic, but by default no incoming traffic to our computer is going to be directed into a container. 
+
+![Alt Text](/simpleWeb/assets/local.png)
+
+In order to make sure that any request from either your computer or some outside computer will be redirected into the container we have to set up an explicit port mapping. A port mapping says, anytime that someone makes a request to a given port on your local network, take that request and automatically forward it to some port inside the container.
+
+![Alt Text](/simpleWeb/assets/port_mapping.png)
+
+One important point here is this is only about 'incoming requests'. Docker containers can by default make requests on its own behalf to the outside world, like installing a dependency. When we ran npm install during the Docker built process, npm reached to the outside world across the internet. So there is no limitation by default on containers ability to reach out. It's strictly limitation on the ability for incoming traffic to get into the containers.
