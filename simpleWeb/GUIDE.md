@@ -1,3 +1,11 @@
+**Table of Contents**
+1. [1. Node.js Project](#1-node.js-roject)  
+2. [2. COPY Instruction](#2-copy-instruction)  
+3. [3. Conatiner Port Mapping](#3-conatiner-port-mapping)  
+
+
+## 1. Node.js Project
+
 Goal of the project is to create a Node.js application, wrap it inside of a Docker container, and then be able to access that web application from a browser running on our local machine. Don't worry about deploying this app right now, we just focus on getting Node.js to work inside of a Docker container.
 
 ![Alt Text](/simpleWeb/assets/steps.png)
@@ -28,7 +36,7 @@ Because alpine in hub is tag, not the repository, we write FROM instruction with
 Why we stick with alpine, but not only node repository for FROM instruction. In Docker world, Alpine is a term for an image that is as small and compact as possible. Alpine version of node image means we are not going to get a bunch of additional pre-installed programs.
 
 
-## COPY Instruction
+## 2. COPY Instruction
 
 COPY Instruction is used to move files and folders from our local file system on our machine to the file system inside of that temporary container.
 
@@ -54,7 +62,7 @@ CMD ["npm", "start"]
 
 
 
-## Conatiner Port Mapping
+## 3. Conatiner Port Mapping
 
 Even we successfully got our image built, and we are running a container out of it, we still are not be able to actually visit the port.
 
@@ -69,3 +77,40 @@ In order to make sure that any request from either your computer or some outside
 ![Alt Text](/simpleWeb/assets/port_mapping.png)
 
 One important point here is this is only about 'incoming requests'. Docker containers can by default make requests on its own behalf to the outside world, like installing a dependency. When we ran npm install during the Docker built process, npm reached to the outside world across the internet. So there is no limitation by default on containers ability to reach out. It's strictly limitation on the ability for incoming traffic to get into the containers.
+
+
+## 4. Unnecessary Rebuilds
+
+I created a new image from our Dockerfile.
+
+![Alt Text](/simpleWeb/assets/rebuild.png)
+
+Then I rebuild an additional image from the same Dockerfile. To create this additional image, BuildKit(or Docker builder) used Cache to create it. Because an image has the exactly the same content was created before.
+
+![Alt Text](/simpleWeb/assets/rebuild2.png)
+
+But when I make even a small change, I changed the index.html's response, every single step after COPY has to be executed again.
+
+![Alt Text](/simpleWeb/assets/rebuild3.png)
+
+But that's not ideal. If we don't make a change to a dependency inside of the project, we don't want to rerun `npm install`. Because all I did was change one of the source code files of our project. And that has nothing to do with our dependencies.
+
+So how can we avoid having to reinstall all dependencies just because we made a little change tp one of the source code files?
+
+So if i change the Dockerfile to this:
+
+```
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY ./package.json .
+
+RUN npm install
+
+COPY . .
+
+CMD ["npm", "start"]
+```
+
+Because the `npm install` reads package.json and installs all dependencies listed under dependencies, and we would skip the `npm install` step if we made any change in the source code.

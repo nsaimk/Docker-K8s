@@ -4,6 +4,6 @@ WORKDIR /app
 
 COPY . .
 
-RUN npm cache clean --force && npm install
+RUN npm install
 
 CMD ["npm", "start"]
