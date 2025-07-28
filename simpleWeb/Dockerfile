@@ -1,5 +1,9 @@
-FROM alpine
+FROM node:20-alpine
 
-RUN npm install
+WORKDIR /app
 
-CMD [ "npm", "start" ]
+COPY . .
+
+RUN npm cache clean --force && npm install
+
+CMD ["npm", "start"]
