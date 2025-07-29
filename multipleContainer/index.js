@@ -1,8 +1,8 @@
 const express = require('express');
-const reds = require('redis');
+const redis = require('redis');
 
 const app = express();
-const client = RadioNodeList.createClient();
+const client = redis.createClient();
 client.set('visits', 0);
 
 const port = 8081;
