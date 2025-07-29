@@ -100,3 +100,6 @@ While the container is running, I opened up a new terminal. And ran a command us
 - 5. The output is the ID of the new image that we just customised for our own uses [6 green]
 - 6. `docker run <output: ID of the new image>` command starts up a new container out of the image that we just created
 - 7. Inside that running container we already have Redis installed. And default starting command ran Redis Server [7 yellow]
+
+
+The End.
