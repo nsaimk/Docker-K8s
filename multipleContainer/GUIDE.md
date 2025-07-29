@@ -2,6 +2,7 @@
 1. [Instruduction of Project](#1-instruduction-of-project)
 2. [Assembiling Dockerfile and Docker Compose](#2-assembiling-dockerfile-docker-compose)
 3. [Docker Compose File](#3-docker-compose-file)
+4. [Networking with Docker Compose](#4-networking-with-docker-compose)
 
 ---
 
@@ -76,6 +77,24 @@ services:
 
 - Then we specify all the different ports that we want to have be opened up on the node-app container.
 
+
+---
+
+
+4. Networking with Docker Compose
+
+How we can take the docker-compose.yml file and create the two separate containers? By just defining two services inside the docker-compose.yml file, it automatically create both these containers on the same network, and they have free access to communicate to each other.
+
+The port decleration in the docker-compose.yml file is to open up access to our container on our local machine. We don't have to do any additional steps to connect them, like port command on terminal.
+
+But how do we actually access the Redis server from our Node.js code? To do that we need to add a location of the Redis server that we are running in the index.html file. And we can connect  the Redis server container by referring to it by its name of 'redis-server' in docker-compose.yml file.
+
+```
+const client = redis.createClient({
+    host: 'redis-server',
+    port: 6379
+});
+```
 
 ---
 
