@@ -3,6 +3,7 @@
 2. [Assembiling Dockerfile and Docker Compose](#2-assembiling-dockerfile-docker-compose)
 3. [Docker Compose File](#3-docker-compose-file)
 4. [Networking with Docker Compose](#4-networking-with-docker-compose)
+5. [Docker Compose Commands](#5-docker-compose-commands)
 
 ---
 
@@ -26,9 +27,8 @@ What we are going to have is separate Docker containers for multiple Node applic
 However, because of we don't worry about scaling yet, we are going to set up single Node app container.
 
 ![Alt Text](/multipleContainer/assets/app_components.png)
-
-
 ---
+
 
 2. Assembiling Dockerfile and Docker Compose
 
@@ -43,9 +43,8 @@ While Redis server is running, I open up a second terminal and run the command `
 ![Alt Text](/multipleContainer/assets/connection_error.png)
 
 Here is what's going on our computer right now. We have Node application in one container, and the Redis application in the separate Docker container. But these two container do not have any automatic communication between the two. They are two absolutely isolated processes. So in order to make sure that our Node app has the ability to reach out to the Redis server and store information, we need to set up some networking infrastructure between them.
-
-
 ---
+
 
 3. Docker Compose File
 
@@ -77,7 +76,7 @@ services:
 
 - Then we specify all the different ports that we want to have be opened up on the node-app container.
 
-
+.
 ---
 
 
@@ -95,7 +94,37 @@ const client = redis.createClient({
     port: 6379
 });
 ```
+.
+---
 
+
+5. Docker Compose Commands
+
+To run containers: `docker compose up`
+
+To stop all running containers: `docker compose down`
+
+We can add restart policy in our docker-compose file in cases below:
+ - "no": never attemp to restart this. container if it stops or crashes(only no policy written in quotation mark)
+ - always: if this container stops for any reason always attempt to restart it
+ - on-failure: only restart if the container stops with an error code
+ - unless-stopped: always restart unless we forcibly stop it
+
+Example policy in docker-compose file:
+
+```
+version: '3'
+services:
+  redis-server:
+    image: 'redis'
+  node-app:
+    restart: "no"
+    build: .
+    ports:
+      - "8081:8081"
+```
+
+Running containers: `docker compose ps` (this command works only in the directory which docker-compose file located)
 ---
 
 The End.
