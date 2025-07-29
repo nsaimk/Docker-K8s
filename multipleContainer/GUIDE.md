@@ -1,6 +1,7 @@
 **Table of Contents**
 1. [Instruduction of Project](#1-instruduction-of-project)
 2. [Assembiling Dockerfile and Docker Compose](#2-assembiling-dockerfile-docker-compose)
+3. [Docker Compose File](#3-docker-compose-file)
 
 ---
 
@@ -45,5 +46,37 @@ Here is what's going on our computer right now. We have Node application in one 
 
 ---
 
+3. Docker Compose File
+
+We have two options here; first we can use Docker CLI's, that built in Docker CLI has functionality tied to it that will allow us to set up a network between two separate containers. However, it will involve different commands that have to be reran every single time we start up our different containers.
+
+The second option is using a separate CLI tool called Docker Compose. Docker Compose is a separate tool that gets. installed along with Docker. So Docker Compose makes it very easy to start up multiple Docker containers at the same time, and automatically connect them together with some form of networking.
+
+![Alt Text](/multipleContainer/assets/docker_compose.png)
+
+To make use of Docker Compose, we use the same build and run commands we ran before. But we encode these commands in a special file in our directory, called `docker-compose.yml`. Once we create this file, then we feed it into the Docker Compose CLI and it is up to the CLI to parse that file and create all the different comtainers with the correct configuration that we specify.
+
+docker-compose.yml:
+```
+version: '3'
+services:
+  redis-server:
+    image: 'redis'
+  node-app:
+    build: .
+    ports:
+      - "8081:8081"
+```
+
+- 'services', service means a type of container. We have two services inside our docker-compose.yml file. We are defining two services inside our docker-compose file, and both these services take the form of these different Docker containers. 
+
+- So we use redis-server, and specify the image that we want docker-compose to use which is redis image.
+
+- We want the 'node-app' container to be built using the Dockerfile inside the current directory, so rather than specifying an image, we say `build .` that means look in the current directory for a Dockerfile and use it to build this image.
+
+- Then we specify all the different ports that we want to have be opened up on the node-app container.
+
+
+---
 
 The End.
