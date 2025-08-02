@@ -1,6 +1,7 @@
 **Table of Contents**
 1. [Instruduction of the Module](#1-instruduction-of-the-module)
 2. [The Flow Specifics](#2-the-flow-specifics)
+3. [Creating the Dev Dockerfile](#3-creating-the-dev-dockerfile)
 
 
 
@@ -23,3 +24,23 @@ After merging, we push our code over to Travis CI, test one more time.
 After Travis CI run tests successfully, it then sets up to automatically take our code base and push it over to AWS hosting. Essentially to a service called Elastic Beanstalk.
 
 So this is our flow.
+---
+
+
+## 3. Creating the Dev Dockerfile
+
+We installed a React application. 
+
+We are going to have two different Docker files. One will be responsible for running our application in development, the other in production.
+
+In this section, we start on the Dockerfile that runs our application in development.
+
+We create a `Dockerfile.dev` file. The purpose of the '.dev' on the end of the Dockerfile is to make sure it is clear that this Dockerfile is only used when we run our application in a development environment. In the future, we are going to put together a second Dockerfile for running our application in production, and it is going to have a name of simply Dockerfile. Otherwise, if we run locally and actively develop our application, we will build our image and start up our container using Dockerfile.dev file.
+
+I created Dockerfile.dev at this point.
+
+I ran this command to build an image of our application: 
+
+- `docker build -f Dockerfile.dev -t workflow:first .`
+-f means that we specify the file that's going to be used to build out the image.
+---
