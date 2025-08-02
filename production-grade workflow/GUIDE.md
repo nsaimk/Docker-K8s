@@ -2,7 +2,7 @@
 1. [Instruduction of the Module](#1-instruduction-of-the-module)
 2. [The Flow Specifics](#2-the-flow-specifics)
 3. [Creating the Dev Dockerfile](#3-creating-the-dev-dockerfile)
-
+4. [NOTE](#4-note:)
 
 
 ## 1. Instruduction to the Chapter
@@ -44,3 +44,8 @@ I ran this command to build an image of our application:
 - `docker build -f Dockerfile.dev -t workflow:first .`
 -f means that we specify the file that's going to be used to build out the image.
 ---
+
+
+## NOTE:
+
+In previous chapters we did not install any of our dependencies into our working directory. Instead, our Docker image installed those dependencies when the image was initially created. So now, we have two copies of dependencies, and we don't need two. So we can delete `node_modules` folder inside our directory.
