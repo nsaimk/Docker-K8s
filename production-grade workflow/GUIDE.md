@@ -5,6 +5,8 @@
 4. [NOTE](#4-note)
 5. [Starting the Container](#5-starting-the-container)
 6. [Docker Volumes](#6-docker-volumes)
+7. [Docker Compose](#7-docker-compose)
+
 
 ## 1. Instruduction to the Chapter
 
@@ -82,3 +84,47 @@ With Docker Volumes, rather than doing the straight copy, we are going to adjust
 
 So when we use the `-v` flag in `-v "$(pwd)":/app` part, we say that anytime the container tries to access something in the app directory, reach back out of the container to the currect or the present working directory(the pwd) on our local machine. And we did not want to overwrite access to the node_modules that we had already installed into our container.
 ---
+
+
+## 7. Docker Compose
+
+In last section, we made use of Docker Volumes to automatically get changes that we make to our source code reflected inside the container. Only downside of it was the long docker run command. Even though we have a single Docker image, we can still make use of Docker Compose to simplify the command we have to run to start up Docker container for development purposes. 
+
+So let's create a `docker-compose.yml` file and inside that file we are going to encode the port setting, and the two volumes that we need to create inside the container.
+
+I created the `docker-compose.yml` file and just ran `docker compose up` command but i got this error: 'failed to solve: failed to read dockerfile: open Dockerfile: no such file or directory'. Because when I put together our initial service in the docker-compose.yml file, I wrote 'build .' that uses the current directory, but we don't have a Dockerfile inside the current directory. We have a Dockerfile.dev file. 
+
+current docker-compose.yml file:
+```
+version: '3'
+services:
+  react-app:
+    build: .
+    ports:
+      - "3001:3000"
+    volumes:
+      - /app/node_modules
+      - .:/app
+```
+
+So how can we force Docker compose to build our image for the `react-app` service using .dev file. For the 'build', rather than saying just look into the current working directory, with '.', for that docker file, we are going to replace that dot with two additional options. 
+
+First one, we are going to add a context. This context option is specifying where we wnat all the files and folders for this image to be pulled from. We want all the files and folders for our project to come form the same directory as docker compose or essentially the current working directory. To indicate that we will add a dot.
+
+Second option is saying dockerfile that is the location of the docker file that's going to be used to construct the image for our react-app service.
+
+```
+version: '3'
+services:
+  react-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3001:3000"
+    volumes:
+      - /app/node_modules
+      - .:/app
+```
+
+Back in my terminal, and ran the command `docker compose up` again, Now it's successfully built.
