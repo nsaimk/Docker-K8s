@@ -4,7 +4,7 @@
 3. [Creating the Dev Dockerfile](#3-creating-the-dev-dockerfile)
 4. [NOTE](#4-note)
 5. [Starting the Container](#5-starting-the-container)
-
+6. [Docker Volumes](#6-docker-volumes)
 
 ## 1. Instruduction to the Chapter
 
@@ -63,4 +63,22 @@ But when I visited the localhost:3000, the page says 'This site can’t be reach
 
 So I took port 3001 on my local machine and map it up to port 3000 inside the container:
 `docker run -p 3001:3000 <container ID>`, it started.
+---
+
+
+## 6. Docker Volumes
+
+In this section, we are going to make a little change to the source code of the react project. On `frontend/src/App.js` file, i just changed a text to 'hi there!' while the contianer is running. Then I refreshed the page, but my change did not occur. Because when we start up our image or initialy create the image, we are taking a snapshot of all of the source code inside of our project directory and we are building our image with that snapshot. So if we want to get changes to be reflected inside of our container after we make a change, we need to either rebuild the image or we can use Docker Volume. Of course we don't want to rebuild the image every time we make a change to our source code. We want to do it without having to stop the container, rebuild the imamge, and then restart the container. 
+
+With Docker Volumes, rather than doing the straight copy, we are going to adjust the Docker run command that we used to start up our running container. By adjusting this commnad, we are going to be making use of Docker Volumes. With a Docker Volume we set up a placeholder(In computing, a placeholder is a character, symbol, or text string that temporarily represents something else, often until the final or actual value is known or available.) inside of our Docker container, so we no longer copy over the entire `/src` directory or the entire public directory. Instead, we put a kind of reference into the snapshot. The Volume sets up a reference that points back to our local machine and gives us access to the files and folders inside of the folders on the local machine. So a Docker Volume can be kind of be thought of port mappings. The port mapping maps a port inside the container to a port outside the container. With a Docker Volume, we set up a mapping from a folder inside the container to a folder outside the container.
+
+![Alt Text](/production-grade%20workflow/assets/volume_command.png)
+
+`docker run -p 3001:3000 -v /app/node_modules -v "$(pwd)":/app <image ID>`
+
+- `-v "$(pwd)":/app`: '-v' sets up a volume, '$' presents working directory that we say that get the present working directory and take the folder on the path and everything inside of it, and map it up to the app folder running inside of our container.
+
+- `-v /app/node_modules`: if we run the whole command without this switch we get an error says  `react-script: not found`. The issue here is that when we set up volume, we said that take everthing inside of our working directory and map it up to the app folder inside of our container. But remember, inside of our current directory we don't have node_modules folder which is where all of our dependencies exist, because we deleted it in a previous section. So the node_modules folder inside the container is overwritten. When we set up volume mapping, we said to Volume that 'anytime you tried to reference node_modules, just go ahead and try to look at the copy of node_modules that is back inside of the front end folder'. But we deleted it. So we get this reference that points back to nothing on the local operating system. To fix it, we pass in an additional '-v' flag and as the only argument or the only folder path on there we said `app/node_modules`. We didn't use a colon. Because, when we use the colon syntax, we say that we want to map up a folder inside the container to a folder outside the container. When we do not use the colon, we are saying 'we want this(node_modules) to be a placeholder for the folder that inside the container. Don't try to map it up against anything.'
+
+So when we use the `-v` flag in `-v "$(pwd)":/app` part, we say that anytime the container tries to access something in the app directory, reach back out of the container to the currect or the present working directory(the pwd) on our local machine. And we did not want to overwrite access to the node_modules that we had already installed into our container.
 ---
