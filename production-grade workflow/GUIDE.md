@@ -6,6 +6,7 @@
 5. [Starting the Container](#5-starting-the-container)
 6. [Docker Volumes](#6-docker-volumes)
 7. [Docker Compose](#7-docker-compose)
+8. [Do We Need COPY?](#8-do-we-need-copy)
 
 
 ## 1. Instruduction to the Chapter
@@ -127,4 +128,50 @@ services:
       - .:/app
 ```
 
-Back in my terminal, and ran the command `docker compose up` again, Now it's successfully built.
+Back in my terminal, and run the command `docker compose up` again that is going to start up our single container and it is going to set up two different volume mounts inside of it, one to kind of bookmark or hold onto the reference to node modules locally inside the container, and the other to map up all of our source code files on our local machine into the container's app directory. Now it's successfully built.
+---
+
+
+## 8. Executing Test
+
+In this section we are on testing stage of the workflow.
+
+- One of the ways testing, while running the docker compose with `docker compose up`, in a second terminal to run `docker exec -it <conatiner ID> npm run test`. It will be updated in live anytime we made a change on the test file.
+
+- Another way is creating a second service in docker-compose.yml file.
+
+```
+version: '3'
+services:
+  react-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3001:3000"
+    volumes:
+      - /app/node_modules
+      - .:/app
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /app/node_modules
+      - .:/app
+    command: ["npm", "run", "test"]
+```
+
+So when I run `docker compuse up`, we are going to start up one container that's going to be responsbile for hosting our development server, and the second container that is going to be responsible for running our tests and rerunning any time that any file inside of our volumes change.
+
+But downside of this second approach is that we don't have the ability to enter any standart in output to that container. So We cannot hit enter to get the test suite to rerun, or w to get any of the options and so on.
+
+With docker attach, we can forward input from our terminal directly to a specific container. So while docker-compose.yml file that contains the test service is ran by `docker compuse up` command, I opened up a second terminal and ran `docker attach <conatiner ID>`. And what we got is that the cursor on terminal is just hovering there. It's not working as we expected. Because when we use docker compose, we are not able to manupilate our test suite by entering p, t, q special commands.
+
+But Why? Let's start up a shell instance inside the running container. Run `docker exec -it <container ID> sh`. '-it' means that we are starting up a connection to `stdin`. Then I run `ps` which prints out all running processes that we have going on inside the container.
+
+![Alt Text](/production-grade%20workflow/assets/testing.png)
+
+Notice how we have a PID of 1 for the command 'npm run start'. We have also got a seperate process running for 'react-scripts start', and so on. So why is the text that we were entering into the attached window not showing up? Because all that different processes have been created inside the container. So when we run 'npm run test', we are actually running process npm. And then the npm looks at the additional arguments we are providing, specifically run test, and uses those additional arguments to decide what to do. So npm starts up a second process that is actually running our tests.
+
+When we run docker attach, we always attach to stdin of the primary process of the container with the PID(process id) of 1. So it is always the npm command. With docker attach, we always get a handle on the primary process, not the secondary. So it is not an option!
