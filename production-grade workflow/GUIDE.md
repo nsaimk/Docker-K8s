@@ -2,7 +2,8 @@
 1. [Instruduction of the Module](#1-instruduction-of-the-module)
 2. [The Flow Specifics](#2-the-flow-specifics)
 3. [Creating the Dev Dockerfile](#3-creating-the-dev-dockerfile)
-4. [NOTE](#4-note:)
+4. [NOTE](#4-note)
+5. [Starting the Container](#5-starting-the-container)
 
 
 ## 1. Instruduction to the Chapter
@@ -46,6 +47,20 @@ I ran this command to build an image of our application:
 ---
 
 
-## NOTE:
+## 4. NOTE
 
 In previous chapters we did not install any of our dependencies into our working directory. Instead, our Docker image installed those dependencies when the image was initially created. So now, we have two copies of dependencies, and we don't need two. So we can delete `node_modules` folder inside our directory.
+---
+
+
+## 5. Starting the Container
+
+I ran `docker run <image ID>`, and got this output on my terminal:
+
+![Alt Text](/production-grade%20workflow/assets/localhost.png)
+
+But when I visited the localhost:3000, the page says 'This site can’t be reached'. Anytime we want to expose a port from our Docker image or Docker container to our machine, we have to add on `-p` flag to map out the ports we want to expose.
+
+So I took port 3001 on my local machine and map it up to port 3000 inside the container:
+`docker run -p 3001:3000 <container ID>`, it started.
+---
