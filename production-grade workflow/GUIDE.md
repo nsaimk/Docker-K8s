@@ -7,6 +7,7 @@
 6. [Docker Volumes](#6-docker-volumes)
 7. [Docker Compose](#7-docker-compose)
 8. [Do We Need COPY?](#8-do-we-need-copy)
+9. [nginx](#9-nginx)
 
 
 ## 1. Instruduction to the Chapter
@@ -175,3 +176,67 @@ But Why? Let's start up a shell instance inside the running container. Run `dock
 Notice how we have a PID of 1 for the command 'npm run start'. We have also got a seperate process running for 'react-scripts start', and so on. So why is the text that we were entering into the attached window not showing up? Because all that different processes have been created inside the container. So when we run 'npm run test', we are actually running process npm. And then the npm looks at the additional arguments we are providing, specifically run test, and uses those additional arguments to decide what to do. So npm starts up a second process that is actually running our tests.
 
 When we run docker attach, we always attach to stdin of the primary process of the container with the PID(process id) of 1. So it is always the npm command. With docker attach, we always get a handle on the primary process, not the secondary. So it is not an option!
+---
+
+
+## 9. nginx
+
+Till now we have put together an implementatiton for `npm run start` and `npm run test`. It is now to think about how we are going to treat our Docker container in a production environment where we are supposed to be running `npm run build`. Reminder, `npm run build` builds a production version of the application. It takes all the JavaScript files, process them all together, puts them all together into a single file and then spits it out to a folder on our hard drive.
+
+This is a pretty important distinction because it changes the mechanics behind how our application is served up in a development and production environment. 
+
+![Alt Text](/production-grade%20workflow/assets/dev_env.png)
+
+The diagram above shows how our application runs on development environment. Inside our web container, we have a development server. Whenever our browser makes a request to port 3001 on local host, it is making request to that `Dev Server`. Then the development server takes the `index.html` file and the `main.js` file, and sends them back over to the browser. So the development server is %100 required in the development environment.
+
+But when we move over to the production environment, the `Dev Server` falls away. We instead run `npm run build` one time and that gives us that `index.html` file and the `main.js` file that we need to communicate to our user's browser. 
+
+As a quick aside, the `Dev Server` falls away because it is not appropriate to be running in a production environment. Because it has a ton of processing power inside of it dedicated to processing these JavaScript files. And this is something we don't need to do when we are running in production, because we are no longer making any changes to the JavaScript code of our project.
+
+So, what we need for our production environment is some type of server here whose sole purpose is to repond to browser requests with that JavaScript files. To solve this, we are going to be making use of a server called `nginx`. Nginx is a very popular web server that takes incoming traffic and reponding to it with some static files.
+
+So we are going to create a seperate Dockerfile that is going to create a production version of our web container. 
+
+![Alt Text](/production-grade%20workflow/assets/nginx.png)
+
+So how we get nginx as our web server? We already created a file called `Dockerfile.dev`. The purpose of this file was to create an image that could be used in the development environment. Now we are going to create a second Dockerfile. It is goint to make a second image that going to run our applicatoin specificly in production.
+
+![Alt Text](/production-grade%20workflow/assets/nginx_dockerfile.png)
+
+- We need to use Node Alpine as a base image because we do have to run `npm run build` command.
+- In order to run `npm run build`, we have to install all of our dependencies from the `package.json` file. We will copy the `package.json` file.
+- We install the dependencies, and once we have those dependencies installed we will be able to execute `npm run build` command.
+- After running `npm run build` and generating our production assets, we will start up the Nginx server and serve the result of that build directory.
+
+But there are two issues in this diagram. The first issue is the installed dependency step. The dependencies only required when we build the application. After that, they no longer required. It would be really nice to avoid carrying around 150 mbs worth of dependencies.
+
+The other issue with the diagram flow is where is the Nginx coming from. What point time does it get installed? At this point, we had already made use of `node apline` inside of our contianer, so it would be really nice to be able to have two different base images.
+
+So here is the plan:
+
+![Alt Text](/production-grade%20workflow/assets/dockerfile_plan.png)
+
+We are going to build a Dockerfile that has `multi-step build process`. Inside the Dockerfile, we are going to have two different block of configuration. Build phase and run phase. 
+
+The 'build phase' uses the node alpine image as base, copies over the package.json file, installs dependencies, and then executing `npm run build`. The result of all that is going to be our JavaScript files that we need to serve up our application in a production environment.
+
+With the second block, run phase, we get the ability to specify a second base image that we are going to use Nginx as the base image. Then we are going to reach over from the run phase to the build phase and say that out of everything that occured during the build phase, we want to get the build directory that has the JavaScript files. So we are going to take the result of all build phase, and we are going to copy it over to our `npm run build` phase. When we copy that, everything else that occured during the build phase, like the alpine image, dependencies installed.., will get dropped out of the final result of our container. So after we copy that directory over, we start Nginx, and we will be using Nginx as the base image.
+
+So I created Dockerfile:
+
+```
+
+```
+
+- By putting on `as builder`, that means from the FROM command and everything underneath it is all going to be referred to as builder phase, so install all dependencies and build our application.
+
+- After `RUN npm run build` instruction, `build` folder will be created in the working directory.
+
+- As default command of nginx image starts up the nginx for us, we do not need to specify a RUN instruction for nginx in our Dockerfile.
+
+So that's it. This is our Dockerfile for production environment. Let's test it.
+
+I run `docker build .` command in my working directory path on my terminal. The image is created. Then i run `docker run -p 8080:80 <image ID>` command, we have to open up our ports here, because nginx is a web server, it wants to start up traffic, so I added ports `8080` to route the traffic, and `80` is default port that nginx uses, as the source port inside the container. So we are going to map up 8080 on our machine to 80 inside the container.
+---
+
+The End.
