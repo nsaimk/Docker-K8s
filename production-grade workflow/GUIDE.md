@@ -225,7 +225,15 @@ With the second block, run phase, we get the ability to specify a second base im
 So I created Dockerfile:
 
 ```
+FROM node:20-alpine as builder
+WORKDIR '/app'
+COPY package.json .
+RUN npm install
+COPY . .
+RUN npm run build
 
+FROM nginx
+COPY --from=builder /app/build /usr/share/nginx/html
 ```
 
 - By putting on `as builder`, that means from the FROM command and everything underneath it is all going to be referred to as builder phase, so install all dependencies and build our application.
